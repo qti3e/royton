@@ -1,8 +1,9 @@
 <?php
-var_dump($var);
-print("#");
-print(TestReceiver);
-$t = new TestReceiver;
-print($t->hidden);
-print("A\n");
-print("B");
+
+setTimeout(function() {
+  echo "Hello ";
+}, 1000);
+
+setTimeout(function() {
+  echo "World";
+}, 2000);

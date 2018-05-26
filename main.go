@@ -11,9 +11,22 @@ package main
 */
 import "C"
 import "fmt"
+import "time"
 
 func main() {
 	fmt.Println("from Go")
 	C.asyncphp_init()
+	cs := C.CString("$a = 4; echo $a . \"\\n\";")
+	wait := make(chan bool, 0)
+	go func () {
+		time.Sleep(time.Second * 2)
+		code := C.CString("$a++; echo $a . \"\\n\";")
+		C.asyncphp_eval(code)
+		wait <- true
+	} ()
+	C.asyncphp_eval(cs)
+	cs = C.CString("$a++; echo $a . \"\\n\";")
+	C.asyncphp_eval(cs)
+	<- wait
 	fmt.Println("from Go")
 }

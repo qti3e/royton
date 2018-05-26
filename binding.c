@@ -92,11 +92,10 @@ void asyncphp_init(void) {
   if (php_request_startup(TSRMLS_C) == FAILURE) {
     return;
   }
+}
 
-  // Attempt to evaluate inline script.
+void asyncphp_eval(char *source) {
   zend_first_try {
-    zend_eval_string("$a = 4; echo $a . \"\\n\";", NULL, "" TSRMLS_CC);
-    zend_eval_string("$a++; echo $a . \"\\n\";", NULL, "" TSRMLS_CC);
-    printf("Executed script.\n");
+    zend_eval_string(source, NULL, "" TSRMLS_CC);
   } zend_end_try();
 }
