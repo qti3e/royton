@@ -9,12 +9,6 @@
 #include <main/php_variables.h>
 #include <TSRM/TSRM.h>
 
-
-// Store PHP engine and context.
-// we have only one context in this project.
-php_engine *engine;
-engine_context *context;
-
 const char engine_ini_defaults[] =
 "html_errors = 0\n"
 "register_argc_argv = 1\n"
@@ -84,13 +78,6 @@ void asyncphp_init(void) {
 #endif
 #endif
 
-#ifdef ZTS
-  void ***tsrm_ls = NULL;
-  tsrm_startup(1, 1, 0, NULL);
-  tsrm_ls = ts_resource(0);
-  *ptsrm_ls = tsrm_ls;
-#endif
-
   sapi_startup(&engine_module);
 
   engine_module.ini_entries = malloc(sizeof(engine_ini_defaults));
@@ -98,50 +85,18 @@ void asyncphp_init(void) {
 
   if (php_module_startup(&engine_module, NULL, 0) == FAILURE) {
     sapi_shutdown();
-
-#ifdef ZTS
-    tsrm_shutdown();
-#endif
     return;
   }
-
-  engine = (php_engine *) malloc((sizeof(php_engine)));
-
-#ifdef ZTS
-  engine->tsrm_ls = tsrm_ls;
-#endif
-
-  // Initialize context
-#ifdef ZTS
-  void ***tsrm_ls = engine->tsrm_ls;
-#endif
-
-  // Initialize context.
-  context = (engine_context *) malloc((sizeof(engine_context)));
-  if (context == NULL) {
-    return;
-  }
-
-  context->engine = engine;
-  // context->parent = parent;
-
-  SG(server_context) = (void *) context;
 
   // Initialize request lifecycle.
   if (php_request_startup(TSRMLS_C) == FAILURE) {
-    SG(server_context) = NULL;
-    free(context);
     return;
   }
-
-  // Eval
-#ifdef ZTS
-  void ***tsrm_ls = *(context->ptsrm_ls);
-#endif
 
   // Attempt to evaluate inline script.
   zend_first_try {
     zend_eval_string("$a = 4; echo $a . \"\\n\";", NULL, "" TSRMLS_CC);
+    zend_eval_string("$a++; echo $a . \"\\n\";", NULL, "" TSRMLS_CC);
     printf("Executed script.\n");
   } zend_end_try();
 }
