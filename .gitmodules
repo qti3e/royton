@@ -1,0 +1,3 @@
+[submodule "php-src"]
+  path = php-src
+  url = http://github.com/php/php-src
