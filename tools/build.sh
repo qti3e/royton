@@ -6,4 +6,4 @@ cd php-src
 ./buildconf --force
 ./configure
 make
-ar q libphp.a **/*.o **/*.lo
+ar q libphp.a $(find . -name "*.o" -or -name "*.lo")
