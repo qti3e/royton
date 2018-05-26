@@ -15,22 +15,8 @@ sudo apt-get install \
   libldap2-dev \
   libxslt-dev
 cd php-src
-./configure \                                                                                     
-	--prefix=/usr/local/php \
-	--enable-mbstring \
-	--with-openssl \
-	--with-xmlrpc \
-	--enable-soap \
-	--enable-zip \
-	--with-gd \
-	--with-jpeg-dir \
-	--with-png-dir \
-	--with-mysql \
-	--with-pgsql \
-	--enable-embedded-mysqli \
-	--with-freetype-dir \
-	--enable-intl \
-	--with-xsl
+./buildconf
+./configure
 make
-cd main
-ar q libphp.a *.o
+ar q libphp.a **/*.o **/*.lo
+popd
