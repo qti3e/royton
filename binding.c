@@ -25,6 +25,7 @@ const char engine_ini_defaults[] =
 ;
 
 static int engine_ub_write(const char *str, uint str_length TSRMLS_DC)  {
+  printf(str);
   return str_length;
 }
 
@@ -77,8 +78,6 @@ sapi_module_struct engine_module = {
 
 void asyncphp_init(void) {
   // Initialize engine
-  php_engine *engine;
-
 #ifdef HAVE_SIGNAL_H
 #if defined(SIGPIPE) && defined(SIG_IGN)
   signal(SIGPIPE, SIG_IGN);
@@ -142,7 +141,7 @@ void asyncphp_init(void) {
 
   // Attempt to evaluate inline script.
   zend_first_try {
-    zend_eval_string("$a = 4;", NULL, "" TSRMLS_CC);
+    zend_eval_string("$a = 4; echo $a . \"\\n\";", NULL, "" TSRMLS_CC);
     printf("Executed script.\n");
   } zend_end_try();
 }
