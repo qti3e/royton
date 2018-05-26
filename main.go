@@ -1,58 +1,43 @@
 package main
 
-import (
-	php "github.com/deuill/go-php"
-	"os"
-	"fmt"
-)
-
-
-type testReceiver struct {
-	Var    string
-	hidden int64
-}
-
-func (t *testReceiver) Ignore() {
-}
-
-func (t *testReceiver) Hello(p string) string {
-	return "Hello " + p
-}
-
-func (t *testReceiver) Goodbye(p string) (string, string) {
-	return "Goodbye", p
-}
-
-func (t *testReceiver) invalid() string {
-	return "I'm afraid I can't let you do that, Dave"
-}
-
-func newTestReceiver(args []interface{}) interface{} {
-	value := "Foo"
-
-	if len(args) > 0 {
-		switch v := args[0].(type) {
-		case bool:
-			return nil
-		case string:
-			value = v
-		}
-	}
-
-	return &testReceiver{Var: value, hidden: 42}
-}
-
+/*
+#cgo CFLAGS: -Iphp-src
+#cgo CFLAGS: -Iphp-src/main
+#cgo CFLAGS: -Iphp-src/Zend
+#cgo CFLAGS: -Iphp-src/TSRM
+#cgo LDFLAGS: php-src/main/libphp.a
+#include "binding.h"
+*/
+import "C"
+import "fmt";
 
 func main() {
-	engine, _ := php.New()
- 	engine.Define("TestReceiver", newTestReceiver)
-
-	context, _ := engine.NewContext()
-	context.Output = os.Stdout
-
-	context.Eval("$t = new TestReceiver; echo isset($t->hidden) ? 1 : 0;")
-	fmt.Println("____")
-	// context.Exec("index.php")
-	engine.Destroy()
+	fmt.Println("from Go")
+	C.asyncphp_init()
+	fmt.Println("from Go")
 }
 
+/*
+// TODO write an script to auto generate libphp.a
+// something like this might work
+cd php-s
+./configure \                                                                                     
+	--prefix=/usr/local/php \
+	--enable-mbstring \
+	--with-openssl \
+	--with-xmlrpc \
+	--enable-soap \
+	--enable-zip \
+	--with-gd \
+	--with-jpeg-dir \
+	--with-png-dir \
+	--with-mysql \
+	--with-pgsql \
+	--enable-embedded-mysqli \
+	--with-freetype-dir \
+	--enable-intl \
+	--with-xsl
+make
+cd main
+ar q libphp.a *.o
+*/
