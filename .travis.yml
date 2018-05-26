@@ -1,0 +1,29 @@
+language: go
+go:
+  - 1.9.2
+os:
+  linux
+branches:
+  only:
+    - master
+git:
+  submodules_depth: 1
+addons:
+  apt:
+    packages:
+      - libxml2-dev
+      - libcurl4-openssl-dev
+      - libjpeg-dev
+      - libpng-dev
+      - libxpm-dev
+      - libmysqlclient-dev
+      - libpq-dev
+      - libicu-dev
+      - libfreetype6-dev
+      - libldap2-dev
+      - libxslt-dev
+install:
+  - ./tools/build.sh
+script:
+  - go build
+  - ./async-php
