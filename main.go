@@ -6,7 +6,8 @@ package main
 #cgo CFLAGS: -Iphp-src/Zend
 #cgo CFLAGS: -Iphp-src/TSRM
 #cgo LDFLAGS: php-src/libphp.a
-#cgo LDFLAGS: -lcrypt -lresolv -lcrypt -lrt -lrt -lm -ldl -lnsl -lxml2 -lxml2 -lxml2 -lcrypt -lxml2 -lxml2 -lxml2 -lcrypt
+#cgo LDFLAGS: -lcrypt -lresolv -lcrypt -lrt -lrt -lm -ldl -lnsl -lxml2
+#cgo LDFLAGS: -lxml2 -lcrypt -lxml2 -lxml2 -lxml2 -lcrypt -lxml2
 #include "binding.h"
 */
 import "C"
@@ -20,7 +21,7 @@ func main() {
 	wait := make(chan bool, 0)
 	go func () {
 		time.Sleep(time.Second * 2)
-		code := C.CString("$a++; echo $a . \"\\n\";")
+		code := C.CString("async_test();")
 		C.asyncphp_eval(code)
 		wait <- true
 	} ()

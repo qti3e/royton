@@ -9,7 +9,7 @@
 #include <main/php_variables.h>
 #include <TSRM/TSRM.h>
 
-const char engine_ini_defaults[] =
+static char engine_ini_defaults[] =
 "html_errors = 0\n"
 "register_argc_argv = 1\n"
 "implicit_flush = 1\n"
@@ -18,8 +18,18 @@ const char engine_ini_defaults[] =
 "max_input_time = -1\n\0"
 ;
 
-static int engine_ub_write(const char *str, uint str_length TSRMLS_DC)  {
-  printf(str);
+PHP_FUNCTION(async_test){
+  printf("From C\n");
+}
+
+static const zend_function_entry async_functions[] = {
+  ZEND_FE(async_test, NULL)
+  {NULL, NULL, NULL}
+};
+
+
+static size_t engine_ub_write(const char *str, size_t str_length)  {
+  printf("%s", str);
   return str_length;
 }
 
@@ -35,7 +45,7 @@ static void engine_register_variables(zval *track_vars_array TSRMLS_DC) {
   php_import_environment_variables(track_vars_array TSRMLS_CC);
 }
 
-static void engine_log_message(char *message TSRMLS_C) {
+static void engine_log_message(char *message, int syslog_type_int) {
   // Nothing.
 }
 
@@ -66,8 +76,31 @@ sapi_module_struct engine_module = {
   engine_register_variables,   // Register Server Variables
   engine_log_message,          // Log Message
   NULL,                        // Get Request Time
+  NULL,                        // Terminate process
 
-  STANDARD_SAPI_MODULE_PROPERTIES
+  NULL,                        // PHP INI Path Override
+
+  NULL,                        // Default POST Reader
+  NULL,                        // Treat Data
+  NULL,                        // Executable Location
+
+  0,                           // PHP INI Ignore
+  0,                           // PHP INI Ignore CWD
+
+  NULL,                        // Get FD
+  NULL,                        // Force HTTP 10
+
+  NULL,                        // Get Target UID
+  NULL,                        // Get Target GID
+
+  NULL,                        // Input Filter
+
+  NULL,                        // INI Defaults
+  0,                           // PHPInfo as Text
+
+  engine_ini_defaults,         // INI Entries
+  async_functions,             // Additional Functions
+  NULL                         // Input Filter Init
 };
 
 void asyncphp_init(void) {
@@ -79,9 +112,6 @@ void asyncphp_init(void) {
 #endif
 
   sapi_startup(&engine_module);
-
-  engine_module.ini_entries = malloc(sizeof(engine_ini_defaults));
-  memcpy(engine_module.ini_entries, engine_ini_defaults, sizeof(engine_ini_defaults));
 
   if (php_module_startup(&engine_module, NULL, 0) == FAILURE) {
     sapi_shutdown();
@@ -96,6 +126,10 @@ void asyncphp_init(void) {
 
 void asyncphp_eval(char *source) {
   zend_first_try {
-    zend_eval_string(source, NULL, "" TSRMLS_CC);
+    if (zend_eval_string(source, NULL, "" TSRMLS_CC) != SUCCESS) {
+      // TODO Print a more useful error message.
+      fprintf(stderr, "Error occurred while evaluating code.\n");
+      fprintf(stderr, "Code: %s\n", source);
+    }
   } zend_end_try();
 }
