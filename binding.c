@@ -37,18 +37,6 @@ static void royton_send_header(sapi_header_struct *sapi_header, void *server_con
   // Do nothing.
 }
 
-static char *royton_read_cookies(TSRMLS_D) {
-  return NULL;
-}
-
-static void royton_register_variables(zval *track_vars_array TSRMLS_DC) {
-  php_import_environment_variables(track_vars_array TSRMLS_CC);
-}
-
-static void royton_log_message(char *message, int syslog_type_int) {
-  // Nothing.
-}
-
 sapi_module_struct royton_module = {
   "royton",                    // Name
   "Evented I/O for PHP",       // Pretty Name
@@ -71,10 +59,10 @@ sapi_module_struct royton_module = {
   royton_send_header,          // Send Header Handler
 
   NULL,                        // Read POST Data
-  royton_read_cookies,         // Read Cookies
+  NULL,                        // Read Cookies
 
-  royton_register_variables,   // Register Server Variables
-  royton_log_message,          // Log Message
+  NULL,                        // Register Server Variables
+  NULL,                        // Log Message
   NULL,                        // Get Request Time
   NULL,                        // Terminate process
 
