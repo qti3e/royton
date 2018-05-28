@@ -22,8 +22,11 @@ addons:
       - libfreetype6-dev
       - libldap2-dev
       - libxslt-dev
+before_install:
+  export PATH=$PROTOBUF_ROOT/bin:$PATH
 install:
+  - go get -u github.com/jteeuwen/go-bindata/...
   - ./tools/build.sh
 script:
-  - go build
+  - make royton
   - ./royton

@@ -8,11 +8,15 @@ package main
 #cgo LDFLAGS: php-src/libphp.a
 #cgo LDFLAGS: -lcrypt -lresolv -lcrypt -lrt -lrt -lm -ldl -lnsl -lxml2
 #cgo LDFLAGS: -lxml2 -lcrypt -lxml2 -lxml2 -lxml2 -lcrypt -lxml2
+#include <stdlib.h>
 #include "binding.h"
 */
 import "C"
-import "fmt"
-import "time"
+import (
+	"fmt"
+	"time"
+	"unsafe"
+)
 
 func main() {
 	fmt.Println("from Go")
@@ -29,5 +33,14 @@ func main() {
 	cs = C.CString("$a++; echo $a . \"\\n\";")
 	C.royton_eval(cs)
 	<-wait
+
+	data, err := Asset("runtime.php")
+	if err != nil {
+		return;
+	}
+	// Skip first two characters (<?)
+	cs = (*C.char)(unsafe.Pointer(&data[2]))
+	C.royton_eval(cs)
+
 	fmt.Println("from Go")
 }
