@@ -1,2 +1,2 @@
-void asyncphp_init(void);
-void asyncphp_eval(char *source);
+void royton_init(void);
+void royton_eval(char *source);

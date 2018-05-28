@@ -16,18 +16,18 @@ import "time"
 
 func main() {
 	fmt.Println("from Go")
-	C.asyncphp_init()
-	cs := C.CString("$a = 4; echo $a . \"\\n\";")
+	C.royton_init()
 	wait := make(chan bool, 0)
-	go func () {
+	go func() {
 		time.Sleep(time.Second * 2)
 		code := C.CString("async_test();")
-		C.asyncphp_eval(code)
+		C.royton_eval(code)
 		wait <- true
-	} ()
-	C.asyncphp_eval(cs)
+	}()
+	cs := C.CString("$a = 4; echo $a . \"\\n\";")
+	C.royton_eval(cs)
 	cs = C.CString("$a++; echo $a . \"\\n\";")
-	C.asyncphp_eval(cs)
-	<- wait
+	C.royton_eval(cs)
+	<-wait
 	fmt.Println("from Go")
 }

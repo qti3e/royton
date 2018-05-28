@@ -9,7 +9,7 @@
 #include <main/php_variables.h>
 #include <TSRM/TSRM.h>
 
-static char engine_ini_defaults[] =
+static char royton_ini_defaults[] =
 "html_errors = 0\n"
 "register_argc_argv = 1\n"
 "implicit_flush = 1\n"
@@ -22,36 +22,36 @@ PHP_FUNCTION(async_test){
   printf("From C\n");
 }
 
-static const zend_function_entry async_functions[] = {
+static const zend_function_entry royton_functions[] = {
   ZEND_FE(async_test, NULL)
   {NULL, NULL, NULL}
 };
 
 
-static size_t engine_ub_write(const char *str, size_t str_length)  {
+static size_t royton_ub_write(const char *str, size_t str_length)  {
   printf("%s", str);
   return str_length;
 }
 
-static void engine_send_header(sapi_header_struct *sapi_header, void *server_context TSRMLS_DC) {
+static void royton_send_header(sapi_header_struct *sapi_header, void *server_context TSRMLS_DC) {
   // Do nothing.
 }
 
-static char *engine_read_cookies(TSRMLS_D) {
+static char *royton_read_cookies(TSRMLS_D) {
   return NULL;
 }
 
-static void engine_register_variables(zval *track_vars_array TSRMLS_DC) {
+static void royton_register_variables(zval *track_vars_array TSRMLS_DC) {
   php_import_environment_variables(track_vars_array TSRMLS_CC);
 }
 
-static void engine_log_message(char *message, int syslog_type_int) {
+static void royton_log_message(char *message, int syslog_type_int) {
   // Nothing.
 }
 
-sapi_module_struct engine_module = {
-  "async-php",                 // Name
-  "Asynchronous PHP runtime",  // Pretty Name
+sapi_module_struct royton_module = {
+  "royton",                    // Name
+  "Evented I/O for PHP",       // Pretty Name
 
   NULL,                        // Startup
   php_module_shutdown_wrapper, // Shutdown
@@ -59,7 +59,7 @@ sapi_module_struct engine_module = {
   NULL,                        // Activate
   NULL,                        // Deactivate
 
-  engine_ub_write,             // Unbuffered Write
+  royton_ub_write,             // Unbuffered Write
   NULL,                        // Flush
   NULL,                        // Get UID
   NULL,                        // Getenv
@@ -68,13 +68,13 @@ sapi_module_struct engine_module = {
 
   NULL,                        // Header Handler
   NULL,                        // Send Headers Handler
-  engine_send_header,          // Send Header Handler
+  royton_send_header,          // Send Header Handler
 
   NULL,                        // Read POST Data
-  engine_read_cookies,         // Read Cookies
+  royton_read_cookies,         // Read Cookies
 
-  engine_register_variables,   // Register Server Variables
-  engine_log_message,          // Log Message
+  royton_register_variables,   // Register Server Variables
+  royton_log_message,          // Log Message
   NULL,                        // Get Request Time
   NULL,                        // Terminate process
 
@@ -98,12 +98,12 @@ sapi_module_struct engine_module = {
   NULL,                        // INI Defaults
   0,                           // PHPInfo as Text
 
-  engine_ini_defaults,         // INI Entries
-  async_functions,             // Additional Functions
+  royton_ini_defaults,         // INI Entries
+  royton_functions,            // Additional Functions
   NULL                         // Input Filter Init
 };
 
-void asyncphp_init(void) {
+void royton_init(void) {
   // Initialize engine
 #ifdef HAVE_SIGNAL_H
 #if defined(SIGPIPE) && defined(SIG_IGN)
@@ -111,9 +111,9 @@ void asyncphp_init(void) {
 #endif
 #endif
 
-  sapi_startup(&engine_module);
+  sapi_startup(&royton_module);
 
-  if (php_module_startup(&engine_module, NULL, 0) == FAILURE) {
+  if (php_module_startup(&royton_module, NULL, 0) == FAILURE) {
     sapi_shutdown();
     return;
   }
@@ -124,7 +124,7 @@ void asyncphp_init(void) {
   }
 }
 
-void asyncphp_eval(char *source) {
+void royton_eval(char *source) {
   zend_first_try {
     if (zend_eval_string(source, NULL, "" TSRMLS_CC) != SUCCESS) {
       // TODO Print a more useful error message.
