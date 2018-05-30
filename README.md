@@ -1,4 +1,4 @@
-# Evented I/O for PHP [![Build Status](https://travis-ci.com/qti3e/async-php.svg?branch=master)](https://travis-ci.com/qti3e/royton)
+# Evented I/O for PHP [![Build Status](https://travis-ci.com/qti3e/royton.svg?branch=master)](https://travis-ci.com/qti3e/royton)
 
 Asynchronous PHP runtime.  
 This project is still a **work in progress** : )
