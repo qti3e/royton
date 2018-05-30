@@ -1,6 +1,11 @@
 GO_FILES = \
 					 main.go \
-					 assets.go
+					 binding.c \
+					 binding.h \
+					 assets.go \
+					 timers.c \
+					 timers.h \
+					 timers.go
 
 royton: $(GO_FILES)
 	go build -o royton

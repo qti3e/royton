@@ -1,6 +1,8 @@
 #include "binding.h"
+#include "timers.h"
 #include <stdio.h>
 #include <errno.h>
+#include "_cgo_export.h"
 
 // PHP includes.
 #include <main/php.h>
@@ -18,12 +20,9 @@ static char royton_ini_defaults[] =
 "max_input_time = -1\n\0"
 ;
 
-PHP_FUNCTION(async_test){
-  printf("From C\n");
-}
 
 static const zend_function_entry royton_functions[] = {
-  ZEND_FE(async_test, NULL)
+  ZEND_FE(setTimeout, NULL)
   {NULL, NULL, NULL}
 };
 

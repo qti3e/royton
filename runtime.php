@@ -1,6 +1,6 @@
 <?
-// Comment
+
 echo "Hello world!\n";
-include "x.php";
-var_dump($argc);
-echo "\n";
+echo setTimeout(2000) . "\n";
+echo setTimeout(3000) . "\n";
+

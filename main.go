@@ -14,25 +14,20 @@ package main
 import "C"
 import (
 	"fmt"
-	"time"
 	"unsafe"
+	"sync"
 )
+
+var wg sync.WaitGroup
 
 func main() {
 	fmt.Println("from Go")
 	C.royton_init()
-	wait := make(chan bool, 0)
-	go func() {
-		time.Sleep(time.Second * 2)
-		code := C.CString("async_test();")
-		C.royton_eval(code)
-		wait <- true
-	}()
+
 	cs := C.CString("$a = 4; echo $a . \"\\n\";")
 	C.royton_eval(cs)
 	cs = C.CString("$a++; echo $a . \"\\n\";")
 	C.royton_eval(cs)
-	<-wait
 
 	data, err := Asset("runtime.php")
 	if err != nil {
@@ -43,4 +38,11 @@ func main() {
 	C.royton_eval(cs)
 
 	fmt.Println("from Go")
+
+	wg.Wait()
+}
+
+func eval(code string) {
+	cs := C.CString(code)
+	C.royton_eval(cs)
 }
