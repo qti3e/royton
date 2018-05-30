@@ -34,16 +34,19 @@ func main() {
 	C.royton_eval(cs)
 
 	cs = C.CString("XXX")
-	C.royton_send(cs)
+	d := C.royton_send(cs)
+	fmt.Println(C.GoString(d))
 
 	cs = C.CString("YYY")
 	C.royton_send(cs)
+	// fmt.Println(":%s", C.GoString(d))
 
 	wg.Wait()
 }
 
 //export royton_recvCb
-func royton_recvCb(data unsafe.Pointer, size C.int) {
+func royton_recvCb(data unsafe.Pointer, size C.int) *C.char {
 	gbuf := C.GoBytes(data, size)
 	fmt.Println(string(gbuf))
+	return C.CString("He")
 }

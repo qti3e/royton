@@ -36,12 +36,18 @@ PHP_FUNCTION(royton_send) {
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_STRING(data, nr)
   ZEND_PARSE_PARAMETERS_END();
-  royton_recvCb(data, nr);
-  // TODO return value from Go to PHP
+
+  char* cb_data = royton_recvCb(data, nr);
+  zend_string *zs;
+  zval str;
+  zs = zend_string_init(cb_data, strlen(cb_data), 0);
+  ZVAL_STR(&str, zs);
+  free(cb_data);
+  *return_value = str;
 }
 
 // Called from Go, send data to PHP
-void royton_send(char *data) {
+char *royton_send(char *data) {
   zval retval;
 
   zend_string *zs;
@@ -54,7 +60,14 @@ void royton_send(char *data) {
   msg_handler_ci.params = &str;
   msg_handler_ci.param_count = 1;
   zend_call_function(&msg_handler_ci, &msg_handler_ci_cache);
-  // TODO return retval to golang.
+
+  char *cstr;
+  int cstrlen;
+  if (Z_TYPE_P(&retval) != IS_STRING) {
+    convert_to_string(&retval);
+  }
+  cstr = Z_STRVAL_P(&retval);
+  return cstr;
 }
 
 static const zend_function_entry royton_functions[] = {
