@@ -4,5 +4,6 @@
 #include "main/php.h"
 
 PHP_FUNCTION(setTimeout);
+void SetTimeoutCb(int id);
 
 #endif

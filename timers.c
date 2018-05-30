@@ -1,5 +1,6 @@
 #include "timers.h"
 #include "_cgo_export.h"
+#include "stdio.h"
 
 // PHP includes.
 #include <main/php.h>
@@ -7,14 +8,27 @@
 #include <main/php_main.h>
 #include <main/php_variables.h>
 
-PHP_FUNCTION(setTimeout) {
-  double f;
+int nextTimerId = 0;
+zend_fcall_info fci[20];
+zend_fcall_info_cache fcc[20];
 
-  ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_DOUBLE(f);
+PHP_FUNCTION(setTimeout) {
+  int id = nextTimerId++;
+  double delay;
+
+  ZEND_PARSE_PARAMETERS_START(2, 2)
+    Z_PARAM_FUNC(fci[id], fcc[id])
+    Z_PARAM_DOUBLE(delay);
   ZEND_PARSE_PARAMETERS_END();
 
-  double id = SetTimeout(f);
+  SetTimeout(id, delay);
 
   RETURN_DOUBLE(id);
+}
+
+void SetTimeoutCb(int id) {
+  printf("R; %d\n", id);
+  zval retval;
+  fci[id].retval = &retval;
+  zend_call_function(&fci[id], &fcc[id]);
 }

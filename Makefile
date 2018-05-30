@@ -5,7 +5,6 @@ GO_FILES = \
 					 assets.go \
 					 timers.c \
 					 timers.h \
-					 timers.go
 
 royton: $(GO_FILES)
 	go build -o royton
