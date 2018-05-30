@@ -47,7 +47,7 @@ void royton_send(char *data) {
   zend_string *zs;
   zval str;
 
-  zs = zend_string_init("hello", strlen("hello"), 0);
+  zs = zend_string_init(data, strlen(data), 0);
   ZVAL_STR(&str, zs);
 
   msg_handler_ci.retval = &retval;

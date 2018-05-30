@@ -32,7 +32,11 @@ func main() {
 	// Skip first two characters (<?)
 	cs := (*C.char)(unsafe.Pointer(&data[2]))
 	C.royton_eval(cs)
+
 	cs = C.CString("XXX")
+	C.royton_send(cs)
+
+	cs = C.CString("YYY")
 	C.royton_send(cs)
 
 	wg.Wait()
