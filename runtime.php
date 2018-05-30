@@ -2,20 +2,10 @@
 
 echo "Hello world!\n";
 
-setTimeout(function() {
-  echo "Hello world after 3000ms\n";
-}, 3000);
+royton_recv(function($msg) {
+  echo "R;" . $msg . "\n";
+});
 
-setTimeout(function() {
-  echo "Hello world after 2500ms\n";
-}, 2500);
+echo "Hello world!\n";
 
-setTimeout(function() {
-  echo "Hello world after 5000ms\n";
-}, 5000);
-
-setTimeout(function() {
-  echo "Hello world after 500ms\n";
-}, 500);
-
-echo "X\n";
+royton_send("Test from PHP");

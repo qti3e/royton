@@ -1,5 +1,4 @@
 #include "binding.h"
-#include "timers.h"
 #include <stdio.h>
 #include <errno.h>
 #include "_cgo_export.h"
@@ -20,9 +19,47 @@ static char royton_ini_defaults[] =
 "max_input_time = -1\n\0"
 ;
 
+zend_fcall_info msg_handler_ci;
+zend_fcall_info_cache msg_handler_ci_cache;
+
+// Called from PHP, set message handler
+PHP_FUNCTION(royton_recv) {
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_FUNC(msg_handler_ci, msg_handler_ci_cache)
+  ZEND_PARSE_PARAMETERS_END();
+}
+
+// Called from PHP, send data to Go
+PHP_FUNCTION(royton_send) {
+  char *data;
+  size_t nr;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_STRING(data, nr)
+  ZEND_PARSE_PARAMETERS_END();
+  royton_recvCb(data, nr);
+  // TODO return value from Go to PHP
+}
+
+// Called from Go, send data to PHP
+void royton_send(char *data) {
+  zval retval;
+
+  zend_string *zs;
+  zval str;
+
+  zs = zend_string_init("hello", strlen("hello"), 0);
+  ZVAL_STR(&str, zs);
+
+  msg_handler_ci.retval = &retval;
+  msg_handler_ci.params = &str;
+  msg_handler_ci.param_count = 1;
+  zend_call_function(&msg_handler_ci, &msg_handler_ci_cache);
+  // TODO return retval to golang.
+}
 
 static const zend_function_entry royton_functions[] = {
-  ZEND_FE(setTimeout, NULL)
+  ZEND_FE(royton_recv, NULL)
+  ZEND_FE(royton_send, NULL)
   {NULL, NULL, NULL}
 };
 

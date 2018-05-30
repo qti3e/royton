@@ -3,8 +3,6 @@ GO_FILES = \
 					 binding.c \
 					 binding.h \
 					 assets.go \
-					 timers.c \
-					 timers.h \
 
 royton: $(GO_FILES)
 	go build -o royton
