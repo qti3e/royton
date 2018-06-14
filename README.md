@@ -1,19 +1,4 @@
-# Evented I/O for PHP [![Build Status](https://travis-ci.com/qti3e/royton.svg?branch=master)](https://travis-ci.com/qti3e/royton)
+# Royton
+Prove of concept about communication between Go and PHP from inside of Go.
 
-Asynchronous PHP runtime.  
-This project is still a **work in progress** : )
-
-## Motivation and Goals
-I think PHP must have something like this:
-```php
-<?php
-
-setTimeout(function() {
-  echo "Hello ";
-}, 1000);
-
-setTimeout(function() {
-  echo "World";
-}, 2000);
-```
-
+[Slides](https://slye3d.github.io/#/view/OBSEuRQC3pupPLlL509L)
