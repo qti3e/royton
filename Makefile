@@ -7,8 +7,8 @@ GO_FILES = \
 royton: $(GO_FILES)
 	go build -o royton
 
-assets.go: runtime.php
-	go-bindata -pkg main -o assets.go runtime.php
+assets.go: index.php
+	go-bindata -pkg main -o assets.go index.php
 
 clean:
 	-rm -f royton assets.go

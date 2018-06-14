@@ -14,39 +14,13 @@ package main
 import "C"
 import (
 	"fmt"
-	"unsafe"
 	"sync"
+	"unsafe"
 )
 
-var wg sync.WaitGroup
-
 func main() {
-	C.royton_init()
-
-	data, err := Asset("runtime.php")
-
-	if err != nil {
-		return;
-	}
-
-	// Skip first two characters (<?)
-	cs := (*C.char)(unsafe.Pointer(&data[2]))
-	C.royton_eval(cs)
-
-	cs = C.CString("XXX")
-	d := C.royton_send(cs)
-	fmt.Println(C.GoString(d))
-
-	cs = C.CString("YYY")
-	C.royton_send(cs)
-	// fmt.Println(":%s", C.GoString(d))
-
-	wg.Wait()
 }
 
 //export royton_recvCb
 func royton_recvCb(data unsafe.Pointer, size C.int) *C.char {
-	gbuf := C.GoBytes(data, size)
-	fmt.Println(string(gbuf))
-	return C.CString("He")
 }
